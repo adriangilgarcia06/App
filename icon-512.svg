@@ -1,0 +1,7 @@
+<svg width="512" height="512" viewBox="0 0 192 192" xmlns="http://www.w3.org/2000/svg">
+<rect width="192" height="192" rx="44" fill="#7c3aed"/>
+<circle cx="145" cy="48" r="25" fill="#f97316"/>
+<path d="M32 130 C58 88 86 124 112 82 C129 55 151 78 164 46" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 22"/>
+<text x="96" y="116" text-anchor="middle" font-size="48" font-family="Arial, sans-serif" font-weight="900" fill="#fff">P</text>
+<text x="96" y="146" text-anchor="middle" font-size="22" font-family="Arial, sans-serif" font-weight="800" fill="#fff" opacity=".9">Plapp</text>
+</svg>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plapp</title>
+  <meta name="theme-color" content="#7c3aed" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Plapp" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.svg" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app" class="app-shell"></div>
+
+  <template id="login-template">
+    <section class="screen login-screen">
+      <div class="login-card">
+        <span class="pill">Plapp</span>
+        <h1>Elige tu usuario</h1>
+      </div>
+
+      <label class="field">Usuario
+        <input id="userName" class="text-input" type="text" placeholder="Usuario" autocomplete="username" />
+      </label>
+
+      <label class="field">Contraseña
+        <input id="userPassword" class="text-input" type="password" placeholder="Contraseña" autocomplete="current-password" />
+      </label>
+
+      <button class="primary" data-action="user-login">Entrar</button>
+      <button class="ghost full" data-action="open-admin">Administrador</button>
+      <p id="loginError" class="error hidden">Usuario o contraseña incorrectos.</p>
+    </section>
+  </template>
+
+  <template id="home-template">
+    <section class="screen home-screen">
+      <div class="top-actions">
+        <button class="ghost small" data-action="logout-user">Salir</button>
+        <button class="ghost small" data-action="open-admin">Admin</button>
+      </div>
+
+      <div class="home-hero">
+        <span class="pill">Para Carla</span>
+        <h1 data-setting="appTitle">Plapp</h1>
+        <p data-setting="appSubtitle">Elige un plan y mándamelo.</p>
+      </div>
+
+      <div class="mini-steps">
+        <div>Día</div>
+        <div>Hora</div>
+        <div>Plan</div>
+        <div>Enviar</div>
+      </div>
+
+      <button class="primary big" data-action="start-plan">Planear cita</button>
+      <button class="secondary" data-action="view-sent">Ver última propuesta</button>
+      <button class="ghost full" data-action="show-install-help">Instalar en el móvil</button>
+    </section>
+  </template>
+
+  <template id="date-template">
+    <section class="screen">
+      <button class="back" data-action="go-home">← Inicio</button>
+      <h2>1. Elige el día</h2>
+      <p class="hint">Selecciona cuándo te apetece quedar.</p>
+      <div class="date-wrap">
+        <input id="dateInput" class="date-input" type="date" />
+      </div>
+      <button class="primary" data-action="save-date">Continuar</button>
+    </section>
+  </template>
+
+  <template id="time-template">
+    <section class="screen">
+      <button class="back" data-action="go-date">← Día</button>
+      <h2>2. Elige el horario</h2>
+      <div id="timeOptions" class="option-grid"></div>
+      <div id="customTimeBox" class="custom-box hidden">
+        <label>Desde <input id="fromTime" type="time" value="18:00" /></label>
+        <label>Hasta <input id="toTime" type="time" value="22:00" /></label>
+      </div>
+      <button class="primary" data-action="save-time">Continuar</button>
+    </section>
+  </template>
+
+  <template id="plan-template">
+    <section class="screen">
+      <button class="back" data-action="go-time">← Horario</button>
+      <h2>3. Elige el plan</h2>
+      <p class="hint">Los planes son para Tudela o Cabanillas. Si eliges fuera, escribe tú el sitio y el plan.</p>
+      <div id="planOptions" class="option-list"></div>
+
+      <div id="outsideBox" class="sub-panel hidden">
+        <h3>Fuera de Tudela/Cabanillas</h3>
+        <p class="hint">Elige ciudad o escribe otra. Luego escribe qué plan quieres hacer allí.</p>
+
+        <div class="option-grid">
+          <button class="choice" data-city-option="Pamplona">Pamplona</button>
+          <button class="choice" data-city-option="Zaragoza">Zaragoza</button>
+          <button class="choice" data-city-option="Logroño">Logroño</button>
+          <button class="choice" data-city-option="Otro sitio">Otro sitio</button>
+        </div>
+
+        <label class="field">Sitio elegido
+          <input id="outsidePlace" class="text-input" placeholder="Ej.: Pamplona, Zaragoza, Logroño..." />
+        </label>
+
+        <label class="field">Plan que quieres hacer allí
+          <textarea id="outsidePlan" placeholder="Escribe aquí el plan: dónde ir, qué hacer, si comer/cenar allí..."></textarea>
+        </label>
+
+        <div class="option-grid two">
+          <button class="choice center" data-night-option="No">Sin noche</button>
+          <button class="choice center" data-night-option="Sí">Con noche</button>
+        </div>
+
+        <div id="nightsBox" class="custom-box hidden">
+          <label>Nº de noches
+            <input id="outsideNights" type="number" min="1" max="7" value="1" />
+          </label>
+        </div>
+      </div>
+
+      <label class="field">
+        Añadir comentario:
+        <textarea id="extraPlan" placeholder="Ej.: prefiero barato, quiero que sea sorpresa, no muy tarde..."></textarea>
+      </label>
+
+      <button class="primary" data-action="save-plans">Continuar</button>
+    </section>
+  </template>
+
+  <template id="dinner-template">
+    <section class="screen">
+      <button class="back" data-action="go-plan">← Plan</button>
+      <h2>4. Elige cena</h2>
+      <p class="hint">Como el plan incluye cena, concreta qué apetece.</p>
+      <div id="dinnerOptions" class="option-list"></div>
+
+      <div id="burgerBox" class="sub-panel hidden">
+        <h3>Hamburguesa</h3>
+        <div id="burgerOptions" class="option-list compact"></div>
+      </div>
+
+      <div id="homemadeBox" class="sub-panel hidden">
+        <h3>Hacer nosotros la cena</h3>
+        <div id="homemadeOptions" class="option-list compact"></div>
+      </div>
+
+      <label class="field">
+        Comentario de cena:
+        <textarea id="dinnerComment" placeholder="Ej.: algo barato, rápido, para llevar..."></textarea>
+      </label>
+
+      <button class="primary" data-action="save-dinner">Continuar</button>
+    </section>
+  </template>
+
+  <template id="sleep-template">
+    <section class="screen">
+      <button class="back" data-action="go-previous-before-sleep">← Atrás</button>
+      <h2>Última pregunta</h2>
+      <p class="question">¿Dormimos juntos?</p>
+      <div class="option-grid two">
+        <button class="choice center" data-sleep="Sí">Sí</button>
+        <button class="choice center" data-sleep="No">No</button>
+      </div>
+      <button class="primary" data-action="save-sleep">Ver resumen</button>
+    </section>
+  </template>
+
+  <template id="summary-template">
+    <section class="screen">
+      <button class="back" data-action="go-sleep">← Dormir</button>
+      <h2>Resumen</h2>
+      <div id="summaryCard" class="card"></div>
+      <button class="primary" data-action="send-request">Enviar propuesta</button>
+      <button class="secondary" data-action="go-home">Cancelar</button>
+    </section>
+  </template>
+
+  <template id="sent-template">
+    <section class="screen">
+      <button class="back" data-action="go-home">← Inicio</button>
+      <h2>Última propuesta</h2>
+      <div id="sentCard" class="card"></div>
+      <button class="primary" data-action="go-home">Volver</button>
+    </section>
+  </template>
+
+  <template id="admin-login-template">
+    <section class="screen">
+      <button class="back" data-action="go-login">← Volver</button>
+      <div class="admin-badge">Admin</div>
+      <h2>Acceso administrador</h2>
+      <input id="adminPassword" class="text-input" type="password" placeholder="Contraseña" />
+      <button class="primary" data-action="admin-login">Entrar</button>
+      <p id="adminError" class="error hidden">Contraseña incorrecta.</p>
+    </section>
+  </template>
+
+  <template id="admin-template">
+    <section class="screen admin-screen">
+      <div class="admin-header">
+        <button class="back" data-action="admin-logout">Salir</button>
+        <h2>Panel administrador</h2>
+      </div>
+
+      <nav class="tabs">
+        <button class="tab active" data-tab="requests">Propuestas</button>
+        <button class="tab" data-tab="settings">Editar app</button>
+      </nav>
+
+      <div id="requestsPanel" class="panel active">
+        <div class="admin-tools">
+          <button class="secondary" data-action="export-data">Exportar</button>
+          <button class="danger" data-action="clear-requests">Borrar propuestas</button>
+        </div>
+        <div id="requestsList"></div>
+      </div>
+
+      <div id="settingsPanel" class="panel">
+        <h3>Textos</h3>
+        <label class="field">Título
+          <input id="settingTitle" class="text-input" />
+        </label>
+        <label class="field">Subtítulo pantalla principal
+          <input id="settingSubtitle" class="text-input" />
+        </label>
+
+        <h3>Planes</h3>
+        <p class="hint">Una opción por línea. Usa “Fuera de Tudela/Cabanillas” para activar el formulario de ciudad y plan libre.</p>
+        <label class="field">Todo el día<textarea id="plansFullDay"></textarea></label>
+        <label class="field">Mañana<textarea id="plansMorning"></textarea></label>
+        <label class="field">Comida / mediodía<textarea id="plansLunch"></textarea></label>
+        <label class="field">Tarde<textarea id="plansAfternoon"></textarea></label>
+        <label class="field">Noche<textarea id="plansNight"></textarea></label>
+        <label class="field">Tarde + noche<textarea id="plansAfternoonNight"></textarea></label>
+        <label class="field">Hora concreta<textarea id="plansCustom"></textarea></label>
+
+        <h3>Cena</h3>
+        <label class="field">Tipo de cena<textarea id="dinnerTypes"></textarea></label>
+        <label class="field">Hamburguesa<textarea id="burgerTypes"></textarea></label>
+        <label class="field">Hacer nosotros la cena<textarea id="homemadeTypes"></textarea></label>
+
+        <button class="primary" data-action="save-settings">Guardar cambios</button>
+        <button class="secondary" data-action="reset-settings">Restaurar valores iniciales</button>
+      </div>
+    </section>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
